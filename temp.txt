@@ -1,0 +1,8 @@
+Name,Age,Sex
+String,Integer,Character
+Xavi,30,M
+Tom,20,M
+CJ,30,M
+CJ,30,M
+Tommy,21,M
+Jim,28,M
