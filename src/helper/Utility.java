@@ -12,15 +12,23 @@ public class Utility {
         System.out.println("search *\t is equivalent to view");
         System.out.println("search * where x is y\t shows all rows where column x = y");
         System.out.println("search z where x is y\t shows all data in column z from each row where column x = y");
+        System.out.println("switch\tafter entering switch you will be asked to enter the preferred table's name");
         System.out.println("exit\tis for quiting the WORST-DATABASE-EVER shell (wdbesh)\n\n\n");
     }
 
     private static boolean isInteger(String str) {
-        if (str.length() == 0 || str.charAt(0) == '0') {
+        if (str.isEmpty()) {
             return false;
         }
         for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) < '0' || str.charAt(i) > '9') {
+            if (i == 0 && str.charAt(i) == '-') {
+                if (str.length() == 1) {
+                    return false;
+                } else {
+                    continue;
+                }
+            }
+            if (Character.digit(str.charAt(i), 10) < 0) {
                 return false;
             }
         }

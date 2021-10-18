@@ -19,7 +19,7 @@ public class Test {
             if (option.equalsIgnoreCase(DBInfo.EXIT_OPTION)) {
                 System.exit(0);
             } else if (option.equalsIgnoreCase(DBInfo.VIEW_OPTION)) {
-                CustomDB.viewTable(CustomDB.tableName);
+                CustomDB.viewTable();
             } else if (option.equalsIgnoreCase(DBInfo.SWITCH_TABLE_OPTION)) {
                 CustomDB.selectTable();
             } else {
@@ -29,6 +29,7 @@ public class Test {
                             Utility.checkForRightInputData(optionArr[1].split(","), CustomDB.dataTypes)) {
                         FileService.writeInFile(CustomDB.tableName, optionArr[1] + "\n");
                         CustomDB.rows.add(optionArr[1]);
+                        CustomDB.tree.insert(optionArr[1].split(",")[CustomDB.idxOfIndex], optionArr[1]);
                     }
                 } else if (optionArr[0].equalsIgnoreCase(DBInfo.SEARCH_OPTION)) {
                     if (optionArr.length == 2 &&
