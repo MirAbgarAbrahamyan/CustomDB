@@ -1,0 +1,7 @@
+Store,Year
+String,Integer
+12,12
+A,1
+A,2
+kl,1
+a,1

@@ -2,6 +2,7 @@ package database;
 
 import helper.Utility;
 import services.FileService;
+import tree.RedBlackTree;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,9 @@ public class CustomDB {
     public static Set<String> setOfColumns;
     public static List<String> rows;
     public static String tableName;
+    private static String index;
+    public static int idxOfIndex;
+    public static RedBlackTree tree;
 
     private static void createTable(String tableName) {
         Scanner scan = new Scanner(System.in);
@@ -48,14 +52,14 @@ public class CustomDB {
         FileService.writeInFile(tableName, columnsString + "\n" + dataTypesString + "\n");
     }
 
-    public static void viewTable(String tableName) {
-        FileService.showFile(tableName);
+    public static void viewTable() {
+        tree.inOrderTraverse();
     }
 
     public static void search(String searchForColumn, String tableName, String[] columns, List<String> rows) {
         System.out.println("SEARCHING...");
         if (searchForColumn.equals("*")) {
-            viewTable(tableName);
+            viewTable();
         } else {
             int i = 0;
             for (; i < columns.length; i++) {
@@ -72,32 +76,46 @@ public class CustomDB {
     public static void search(String searchForColumn, String[] columns, List<String> rows,
                               String column, String columnCondition) {
         System.out.println("SEARCHING...");
-        int idxOfColumn = 0;
-        for (; idxOfColumn < columns.length; idxOfColumn++) {
-            if (column.equals(columns[idxOfColumn])) {
-                break;
+        if (column.equals(index)) {
+            System.out.println("TREE");
+            if (searchForColumn.equals("*")) {
+                tree.search(columnCondition, true, -1);
+            } else {
+                for (int i = 0; i < columns.length; i++) {
+                    if (searchForColumn.equals(columns[i])) {
+                        tree.search(columnCondition, false, i);
+                        break;
+                    }
+                }
             }
-        }
-
-        if (!searchForColumn.equals("*")) {
-            int i = 0;
-            for (; i < columns.length; i++) {
-                if (searchForColumn.equals(columns[i])) {
+        } else {
+            int idxOfColumn = 0;
+            for (; idxOfColumn < columns.length; idxOfColumn++) {
+                if (column.equals(columns[idxOfColumn])) {
                     break;
                 }
             }
 
-            for (int j = 2; j < rows.size(); j++) {
-                String[] row = rows.get(j).split(",");
-                if (row[idxOfColumn].equals(columnCondition)) {
-                    System.out.println(row[i]);
+            if (!searchForColumn.equals("*")) {
+                int i = 0;
+                for (; i < columns.length; i++) {
+                    if (searchForColumn.equals(columns[i])) {
+                        break;
+                    }
                 }
-            }
-        } else {
-            for (int j = 2; j < rows.size(); j++) {
-                String[] row = rows.get(j).split(",");
-                if (row[idxOfColumn].equals(columnCondition)) {
-                    System.out.println(rows.get(j));
+
+                for (int j = 2; j < rows.size(); j++) {
+                    String[] row = rows.get(j).split(",");
+                    if (row[idxOfColumn].equals(columnCondition)) {
+                        System.out.println(row[i]);
+                    }
+                }
+            } else {
+                for (int j = 2; j < rows.size(); j++) {
+                    String[] row = rows.get(j).split(",");
+                    if (row[idxOfColumn].equals(columnCondition)) {
+                        System.out.println(rows.get(j));
+                    }
                 }
             }
         }
@@ -128,6 +146,27 @@ public class CustomDB {
         columns = rows.get(0).split(",");
         dataTypes = rows.get(1).split(",");
         setOfColumns = new HashSet<>(Arrays.asList(columns));
+        System.out.println("Table's columns:\n" + Arrays.toString(columns));
+        System.out.println("Their types:\n" + Arrays.toString(dataTypes));
+        chooseIndex();
         return tableName;
+    }
+
+    private static void chooseIndex() {
+        tree = new RedBlackTree();
+        Scanner scan = new Scanner(System.in);
+        do {
+            System.out.print("Choose the index (enter the column name): ");
+            index = scan.nextLine();
+        } while (!setOfColumns.contains(index));
+        idxOfIndex = 0;
+        for (; idxOfIndex < columns.length; idxOfIndex++) {
+            if (index.equals(rows.get(0).split(",")[idxOfIndex])) {
+                break;
+            }
+        }
+        for (int i = 2; i < rows.size(); i++) {
+            tree.insert(rows.get(i).split(",")[idxOfIndex], rows.get(i));
+        }
     }
 }
